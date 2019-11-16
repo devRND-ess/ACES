@@ -1,0 +1,46 @@
+#! C:/Program Files/Nuke10.0v6/nuke-10.0.6.dll -nx
+version 10.0 v6
+Gizmo {
+ addUserKnob {20 User}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 328
+  ypos -161
+ }
+ ColorMatrix {
+  matrix {
+      {0.695452 0.140679 0.163869}
+      {0.0447946 0.859671 0.0955343}
+      {-0.00552588 0.00402521 1.0015}
+    }
+  name ACES_ACEScg
+  selected true
+  xpos 328
+  ypos -135
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/Log2_48_nits_Shaper_to_linear.spi1d
+  version 2
+  direction inverse
+  working_space "ACES - ACEScg"
+  name outputShaperToLinearINV
+  xpos 328
+  ypos -75
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/Log2_48_nits_Shaper.RRT.sRGB.spi3d
+  version 2
+  interpolation tetrahedral
+  working_space "ACES - ACEScg"
+  name outputShaperToLinearINV1
+  xpos 328
+  ypos 15
+ }
+ Output {
+  name Output1
+  xpos 328
+  ypos 68
+ }
+end_group
