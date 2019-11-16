@@ -1,0 +1,228 @@
+#! C:/Program Files/Nuke10.0v6/nuke-10.0.6.dll -nx
+version 10.0 v6
+Gizmo {
+icon C:\Users\bhuwan-c-s\.nuke\OCIO_logo.png
+ addUserKnob {20 User}
+ addUserKnob {4 in l "input colorspace" t "define the input colorspace" M {ACES(linear) ACEScg sRGB(gamma~2.2) sRGB(linear) ""}}
+ in sRGB(linear)
+ addUserKnob {4 out l "output colorspace" t "define output colorspace" M {ACES(linear) ACEScg sRGB(gamma~2.2) sRGBlinear "ACES LUT"}}
+ out sRGB(gamma~2.2)
+ addUserKnob {6 preserveAppearance l "preserve appearance when converting from sRGB to ACES" t "preserve appearance when converting from sRGB to ACES" +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 0
+ }
+set N3a08800 [stack 0]
+ Dot {
+  name Dot3
+  xpos 228
+  ypos 4
+ }
+ ColorMatrix {
+  matrix {
+      {0.43957568 0.38391259 0.17651173}
+      {0.08960038 0.81471415 0.09568546}
+      {0.01741548 0.10873435 0.87385017}
+    }
+  name sRGBlinear_to_ACESLinear2
+  xpos 194
+  ypos 73
+ }
+push $N3a08800
+ Colorspace {
+  colorspace_in sRGB
+  name sRGBtoLinear
+  xpos 0
+  ypos 38
+ }
+ ColorMatrix {
+  matrix {
+      {0.43957568 0.38391259 0.17651173}
+      {0.08960038 0.81471415 0.09568546}
+      {0.01741548 0.10873435 0.87385017}
+    }
+  name sRGBlinear_to_ACESLinear
+  xpos 0
+  ypos 73
+ }
+push $N3a08800
+ Dot {
+  name Dot4
+  xpos -128
+  ypos 4
+ }
+set N1e309400 [stack 0]
+ ColorMatrix {
+  matrix {
+      {1.45143932 -0.23651075 -0.21492857}
+      {-0.07655377 1.1762297 -0.09967593}
+      {0.00831615 -0.00603245 0.9977163}
+    }
+  invert true
+  name ACEScg_to_ACESLinear
+  xpos -162
+  ypos 73
+ }
+push $N1e309400
+ Dot {
+  name Dot2
+  xpos -250
+  ypos 4
+ }
+ NoOp {
+  name NoOp1
+  xpos -284
+  ypos 75
+ }
+ Switch {
+  inputs 4
+  which {{in}}
+  name switch_IN
+  xpos 0
+  ypos 157
+ }
+ ColorMatrix {
+  matrix {
+      {0.43957568 0.38391259 0.17651173}
+      {0.08960038 0.81471415 0.09568546}
+      {0.01741548 0.10873435 0.87385017}
+    }
+  invert true
+  name ACESlinear_to_sRGBlinear_cancel
+  xpos 0
+  ypos 199
+  disable {{"in>1 && out<2?1-preserveAppearance:1"}}
+ }
+ Colorspace {
+  colorspace_out sRGB
+  name Linear_to_sRGB
+  xpos 0
+  ypos 238
+  disable {{"in>1 && out<2?1-preserveAppearance:1"}}
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/InvRRT.sRGB.Log2_48_nits_Shaper.spi3d
+  version 2
+  interpolation tetrahedral
+  working_space "ACES - ACEScg"
+  name InvRRT_sRGB_48_shaper
+  xpos 0
+  ypos 264
+  disable {{"in>1 && out<2?1-preserveAppearance:1"}}
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/Log2_48_nits_Shaper_to_linear.spi1d
+  version 2
+  working_space "ACES - ACEScg"
+  name Log2_48_shaper_to_linear
+  xpos 0
+  ypos 290
+  disable {{"in>1 && out<2?1-preserveAppearance:1"}}
+ }
+ Dot {
+  name Dot1
+  xpos 34
+  ypos 428
+ }
+set N1de44400 [stack 0]
+ Dot {
+  name Dot7
+  xpos 199
+  ypos 428
+ }
+set N1e308800 [stack 0]
+ Dot {
+  name Dot8
+  xpos 343
+  ypos 428
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/Log2_48_nits_Shaper_to_linear.spi1d
+  version 2
+  direction inverse
+  working_space "ACES - ACEScg"
+  name Log2_48_shaper_to_linear_inverseDir
+  xpos 309
+  ypos 466
+ }
+ OCIOFileTransform {
+  file C:/colorspace/aces_1.0.3/luts/Log2_48_nits_Shaper.RRT.sRGB.spi3d
+  version 2
+  interpolation tetrahedral
+  working_space "ACES - ACEScg"
+  name Log2_48_shaper_RRT
+  xpos 309
+  ypos 492
+ }
+push $N1e308800
+ ColorMatrix {
+  matrix {
+      {0.43957568 0.38391259 0.17651173}
+      {0.08960038 0.81471415 0.09568546}
+      {0.01741548 0.10873435 0.87385017}
+    }
+  invert true
+  name ACESlinear_to_sRGBlinear2
+  xpos 165
+  ypos 467
+ }
+push $N1de44400
+ ColorMatrix {
+  matrix {
+      {0.43957568 0.38391259 0.17651173}
+      {0.08960038 0.81471415 0.09568546}
+      {0.01741548 0.10873435 0.87385017}
+    }
+  name ACESlinear_to_sRGBlinear
+  xpos 0
+  ypos 464
+ }
+ Colorspace {
+  colorspace_out sRGB
+  name linear_to_sRGB
+  xpos 0
+  ypos 499
+ }
+push $N1de44400
+ Dot {
+  name Dot6
+  xpos -106
+  ypos 428
+ }
+set N1e308c00 [stack 0]
+ ColorMatrix {
+  matrix {
+      {1.45143932 -0.23651075 -0.21492857}
+      {-0.07655377 1.1762297 -0.09967593}
+      {0.00831615 -0.00603245 0.9977163}
+    }
+  name ACESlinear_to_ACEScg
+  xpos -140
+  ypos 473
+ }
+push $N1e308c00
+ Dot {
+  name Dot5
+  xpos -242
+  ypos 428
+ }
+ NoOp {
+  name NoOp2
+  xpos -276
+  ypos 471
+ }
+ Switch {
+  inputs 5
+  which {{out}}
+  name Switch2
+  xpos 0
+  ypos 582
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 686
+ }
+end_group
